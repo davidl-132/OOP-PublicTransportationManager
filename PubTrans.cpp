@@ -1,10 +1,19 @@
+//Name: Ly Tran Gia Khang
+//ID: 24110098
+//Generated with assistance from ChatGPT.
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
 string formatTime(double time);
+// ==================== Station ====================
+// Represents a transportation station (Bus, EcoBus, Train, Metro).
+// Stores associated Vehicles and their Schedules.
 class Station;
 // ==================== Vehicle ====================
+// Abstract base class representing a generic vehicle in the system.
+// Contains shared attributes and methods for all vehicle types.
+// Derived classes: Bus, EcoBus, Train, Metro.
 class Vehicle{
 private:
 protected:
@@ -43,6 +52,7 @@ public:
     void setSpeed(int _speed){speed = _speed;}
     void setDistance(double _distance){distance = _distance;}
 
+    // Book a seat if available, returns true if successful.
     bool bookSeat(){
         if(bookedSeats < capacity){
             bookedSeats++;
@@ -51,10 +61,12 @@ public:
         return false;
     }
 
+    // Cancel a previously booked seat if any exist.
     void cancelSeat(){
         if(bookedSeats > 0) bookedSeats--;
     }
 
+    // Virtual method to calculate travel time based on distance and speed.
     virtual double calculateTravelTime(double distance){
         return distance / speed;
     }
@@ -62,12 +74,16 @@ public:
     virtual void displayInfo() = 0;
     virtual void displaySummary() = 0;
 
+    // Assign the vehicle to a station if types match.
     bool assignToStation(Station* st);
 
 
     virtual ~Vehicle(){}
 };
+
 // ==================== Bus ====================
+// Represents a standard Bus.
+// Inherits from Vehicle and uses default travel time calculation.
 class Bus : public Vehicle{
 private:
 protected:
@@ -75,6 +91,7 @@ public:
     Bus(string _route, int _capacity, int _bookedSeats, string _status, int _speed, double _distance) 
     : Vehicle("Bus", _route, _capacity, _bookedSeats, _status, _speed, _distance){}
 
+    // Display detailed information about the object.
     void displayInfo() override{
         cout << "[BUS] Route: " << getRoute() << endl;
         cout << "Capacity: " << getCapacity() << endl;
@@ -83,12 +100,15 @@ public:
         cout << "Speed: " << getSpeed() << " km/h" << endl;
     }
 
+    // Display summarized information (one line) about the object.
     void displaySummary() override{
     cout << "[" << getType() << "] " << getRoute() << " | Seats: " << getBookedSeats() << "/" << getCapacity() << " | Status: " << getStatus() << endl;
     }
 };
 
 // ==================== EcoBus ====================
+// Represents an Eco-friendly Bus.
+// Overrides travel time calculation to be 20% longer due to eco constraints.
 class EcoBus : public Vehicle{
 private:
 protected:
@@ -96,10 +116,12 @@ public:
     EcoBus(string _route, int _capacity, int _bookedSeats, string _status, int _speed, double _distance) 
     : Vehicle("EcoBus", _route, _capacity, _bookedSeats, _status, _speed, _distance){}
 
+    // Virtual method to calculate travel time based on distance and speed.
     double calculateTravelTime(double distance) override{
         return (distance / speed) * 1.2;
     }
     
+    // Display detailed information about the object.
     void displayInfo() override{
         cout << "[ECO BUS] Route: " << getRoute() << endl;
         cout << "Capacity: " << getCapacity() << endl;
@@ -108,12 +130,15 @@ public:
         cout << "Speed: " << getSpeed() << " km/h" << endl;
     }
 
+    // Display summarized information (one line) about the object.
     void displaySummary() override{
     cout << "[" << getType() << "] " << getRoute() << " | Seats: " << getBookedSeats() << "/" << getCapacity() << " | Status: " << getStatus() << endl;
     }
 };
 
 // ==================== Train ====================
+// Represents a Train.
+// Inherits from Vehicle and provides specific display details.
 class Train : public Vehicle{
 private:
 protected:
@@ -121,6 +146,7 @@ public:
     Train(string _route, int _capacity, int _bookedSeats, string _status, int _speed, double _distance) 
     : Vehicle("Train", _route, _capacity, _bookedSeats, _status, _speed, _distance){}
 
+    // Display detailed information about the object.
     void displayInfo() override{
         cout << "[TRAIN] Route: " << getRoute() << endl;
         cout << "Capacity: " << getCapacity() << endl;
@@ -129,12 +155,15 @@ public:
         cout << "Speed: " << getSpeed() << " km/h" << endl;
     }
 
+    // Display summarized information (one line) about the object.
     void displaySummary() override{
     cout << "[" << getType() << "] " << getRoute() << " | Seats: " << getBookedSeats() << "/" << getCapacity() << " | Status: " << getStatus() << endl;
     }
 };
 
 // ==================== Metro ====================
+// Represents a Metro system.
+// Similar to Train but for metro transportation.
 class Metro : public Vehicle{
 private:
 protected:
@@ -142,6 +171,7 @@ public:
     Metro(string _route, int _capacity, int _bookedSeats, string _status, int _speed, double _distance) 
     : Vehicle("Metro", _route, _capacity, _bookedSeats, _status, _speed, _distance){}
 
+    // Display detailed information about the object.
     void displayInfo() override{
         cout << "[METRO] Route: " << getRoute() << endl;
         cout << "Capacity: " << getCapacity() << endl;
@@ -150,12 +180,15 @@ public:
         cout << "Speed: " << getSpeed() << " km/h" << endl;
     }
 
+    // Display summarized information (one line) about the object.
     void displaySummary() override{
     cout << "[" << getType() << "] " << getRoute() << " | Seats: " << getBookedSeats() << "/" << getCapacity() << " | Status: " << getStatus() << endl;
     }
 };
 
 // ==================== Schedule ====================
+// Stores information about scheduled arrivals or departures.
+// Each schedule is linked to a specific Vehicle.
 class Schedule{
 private:
     string time;
@@ -177,8 +210,10 @@ public:
     void setStatus(string _status){status = _status;}
     void setVehicle(Vehicle* _vehicle){vehicle = _vehicle;}
 
+    // Display detailed information about the object.
     void displayInfo(){
         if(vehicle){
+    // Virtual method to calculate travel time based on distance and speed.
         double travelTime = vehicle->calculateTravelTime(vehicle->getDistance());
         cout << "\t[" << getTime() << "] - " << vehicle->getType() << " from " << vehicle->getRoute() << " ---> " << vehicle->getStatus() << endl;
         cout << "\tEstimated arrival in " << formatTime(travelTime) << endl; 
@@ -187,6 +222,8 @@ public:
 };
 
 // ==================== Station ====================
+// Represents a transportation station (Bus, EcoBus, Train, Metro).
+// Stores associated Vehicles and their Schedules.
 class Station{
 private:
     string name;
@@ -210,35 +247,42 @@ public:
     void setLocation(string _location){location = _location;}
     void setType(string _type){type = _type;}
 
+    // Add a new vehicle to the station.
     void addVehicle(Vehicle* _vehicle){
         vehicles.push_back(_vehicle);
     }
 
+    // Add a new schedule to the station.
     void addSchedule(Schedule _schedule){
         schedules.push_back(_schedule);
     }
 
+    // Remove a schedule from the station by index.
     void removeSchedule(int i){
         if(i >= 0 && i < schedules.size()){
             schedules.erase(schedules.begin() + i);
         }
     }
 
+    // List all schedules of the station.
     void listSchedules(){
         for(int i=0; i<schedules.size(); i++){
             cout << "#" << i+1 << ". ";
+    // Display detailed information about the object.
             schedules[i].displayInfo();
         }
     }
 
     int getScheduleSize(){return schedules.size();}
 
+    // Display detailed information about the object.
     void displayInfo(){
         cout << "Station Name: " << getName() << endl;
         cout << "Location: " << getLocation() << endl;
         cout << "Type: " << getType() << endl;
     }
 
+    // Display summarized information (one line) about the object.
     void displaySummary(){
         cout << "[" << getType() << "] " << getName() << " (" << getLocation() << ")" << endl;
     }
@@ -246,6 +290,8 @@ public:
 };
 
 // ==================== Passenger ====================
+// Represents a passenger using the public transport system.
+// Passengers can book or cancel tickets linked to Vehicles.
 class Passenger{
 private:
     string name;
@@ -268,22 +314,26 @@ public:
     void setAge(int _age){age = _age;}
     void setTicketID(string _ticketID){ticketID = _ticketID;}
 
+    // Display detailed information about the object.
     void displayInfo(){
         cout << "Passenger Name: " << getName() << endl;
         cout << "Age: " << getAge() << endl;
         cout << "Ticket ID: " << getTicketID() << endl;
         cout << "Booked Vehicles:" << endl;
         for(auto bv : bookedVehicles){
+    // Display detailed information about the object.
             bv->displayInfo();
             cout << "------------------------" << endl;
         }
     }
 
+    // Display summarized information (one line) about the object.
     void displaySummary(){
         cout << getName() << " (Age: " << getAge() << ", Ticket: " << getTicketID() << ")" << endl;
     }
 
 
+    // Book a ticket for a passenger on a specific vehicle.
     void bookTicket(Vehicle *_vehicle){
     // Kiểm tra đã đặt chưa
     bool alreadyBooked = false;
@@ -299,6 +349,7 @@ public:
         return;
         }
 
+    // Book a seat if available, returns true if successful.
     if(_vehicle->bookSeat()){
         bookedVehicles.push_back(_vehicle);
         cout << getName() << " successfully booked a seat on " << _vehicle->getRoute() << "." << endl;
@@ -307,6 +358,7 @@ public:
         }
     }
 
+    // Cancel a booked ticket for a passenger.
     void cancelTicket(Vehicle *_vehicle){
     // tìm vị trí để xóa
     int pos = -1;
@@ -323,11 +375,13 @@ public:
         }
 
     bookedVehicles.erase(bookedVehicles.begin() + pos);
+    // Cancel a previously booked seat if any exist.
     _vehicle->cancelSeat();
     cout << getName() << " successfully canceled the ticket on " << _vehicle->getRoute() << "." << endl;
     } 
 };
 
+// Assign the vehicle to a station if types match.
 bool Vehicle::assignToStation(Station* st){
     if(st->getType() == type){
         st->addVehicle(this);
@@ -337,6 +391,8 @@ bool Vehicle::assignToStation(Station* st){
 }
 
 // ==================== System ====================
+// Central manager class for handling Stations, Vehicles, and Passengers.
+// Provides menu options for interacting with the entire system.
 class System{
 private:
     vector<Station*> stations;
@@ -355,6 +411,7 @@ public:
     void addPassenger(Passenger* _passenger){
         passengers.push_back(_passenger);
     }
+    // Add a new vehicle to the station.
     void addVehicle(Vehicle* _vehicle){
         vehicles.push_back(_vehicle);
     }
@@ -363,6 +420,7 @@ public:
         cout << "\n==========List of Stations ==========" << endl;
         for(int i=0; i<stations.size(); i++){
             cout << "#" << i+1 << ". ";
+    // Display detailed information about the object.
             stations[i]->displayInfo();
             cout << endl;
         }
@@ -372,6 +430,7 @@ public:
         cout << "\n==========List of Passengers ==========" << endl;
         for(int i=0; i<passengers.size(); i++){
             cout << "#" << i+1 << ". ";
+    // Display detailed information about the object.
             passengers[i]->displayInfo();
             cout << endl;
         }
@@ -381,6 +440,7 @@ public:
         cout << "\n==========List of Vehicles ==========" << endl;
         for(int i=0; i<vehicles.size(); i++){
             cout << "#" << i+1 << ". ";
+    // Display detailed information about the object.
             vehicles[i]->displayInfo();
             cout << endl;
         }
@@ -390,6 +450,7 @@ public:
     cout << "\n========== Vehicles ==========" << endl;
     for(int i=0; i<vehicles.size(); i++){
         cout << "#" << i+1 << ". ";
+    // Display summarized information (one line) about the object.
         vehicles[i]->displaySummary();
         }
     }
@@ -398,6 +459,7 @@ public:
     cout << "\n========== Stations ==========" << endl;
     for(int i=0; i<stations.size(); i++){
         cout << "#" << i+1 << ". ";
+    // Display summarized information (one line) about the object.
         stations[i]->displaySummary();
         }
     }
@@ -406,6 +468,7 @@ public:
     cout << "\n========== Passengers ==========" << endl;
     for(int i=0; i<passengers.size(); i++){
         cout << "#" << i+1 << ". ";
+    // Display summarized information (one line) about the object.
         passengers[i]->displaySummary();
         }
     }
@@ -431,7 +494,7 @@ public:
     }
 };
 
-// Hàm tạo mã vé ngẫu nhiên
+// Method to generate a random ticket ID.
 string generateTicketID() {
     int num = rand() % 10000; // random từ 0 → 999
     stringstream ss;
@@ -439,7 +502,7 @@ string generateTicketID() {
     return ss.str();
 }
 
-// Hàm định dạng thời gian từ giờ thập phân sang giờ:phút
+// Format time in hours and minutes.
 string formatTime(double time){
     int hours = (int)time;
     int minutes = (int)((time - hours) * 60);
@@ -476,15 +539,18 @@ void menu(){
     cout << "Choose your choice: ";
 }
 
+// ==================== Main Function ====================
+// Entry point of the program.
+// Displays the menu and executes user-selected options.
 int main(){
     System sys;
     int choice;
-    //Tạo sẵn station mẫu
+    //Create sample stations
     Station* busStation = new Station("Ben Xe An Suong", "TP.HCM", "Bus");
     Station* ecoBusStation = new Station("Ben Xe Thao Dien", "TP.HCM", "EcoBus");
     Station* trainStation = new Station("Ga Sai Gon", "TPHCM", "Train");
     Station* metroStation = new Station("Ga Ben Thanh", "TP.HCM", "Metro");
-    //Tạo sẵn vehicle mẫu
+    //Create sample vehicles
     Vehicle* bus1 = new Bus("District 12 -> Tan Binh District", 30, 10, "On-time", 55, 14);
     Vehicle* bus2 = new Bus("District 12 - > District 1", 40, 25, "Delayed", 60, 17.7);
 
@@ -497,7 +563,7 @@ int main(){
     Vehicle* metro1 = new Metro("Ben Thanh -> Suoi Tien", 300, 200, "On-time", 135, 19.7);
     Vehicle* metro2 = new Metro("Ben Thanh -> Thao Dien", 250, 180, "On-time", 120, 11.3);
 
-    //Gán vehicle vào station
+    //Assign vehicles to stations
     bus1->assignToStation(busStation);
     bus2->assignToStation(busStation);
     eco1->assignToStation(ecoBusStation);
@@ -507,7 +573,7 @@ int main(){
     metro1->assignToStation(metroStation);
     metro2->assignToStation(metroStation);
 
-    //Thêm lịch trình mẫu
+    //Create sample schedules
     Schedule sch1("08:00", "Arriving", bus1);
     Schedule sch2("09:00", "Departing", bus2);
     Schedule sch3("10:00", "Arriving", eco1);
@@ -517,12 +583,12 @@ int main(){
     Schedule sch7("14:00", "Arriving", metro1);
     Schedule sch8("15:00", "Departing", metro2);
 
-    //Tạo sẵn passenger mẫu
+    //Create sample passengers
     Passenger* p1 = new Passenger("Nguyen Khanh Bang", 19, "TICKET0001");
     Passenger* p2 = new Passenger("Nguyen Vu Nhat Duy", 19, "TICKET0002");
     Passenger* p3 = new Passenger("Nguyen Khanh Tuyet", 7, "TICKET0003");
 
-    //Thêm vào hệ thống
+    //Add to system
     sys.addStation(busStation);
     sys.addStation(ecoBusStation);
     sys.addStation(trainStation);
@@ -558,7 +624,7 @@ int main(){
             cout << "\t#4. Metro" << endl;
             cout << "Choose your option: ";
             int tChoice; cin >> tChoice;
-            while (cin.fail() || tChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || tChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -589,7 +655,7 @@ int main(){
             sys.displayStationsSummary();
             cout << "Enter station number: ";
             int sChoice; cin >> sChoice;
-            while (cin.fail() || sChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || sChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -606,7 +672,7 @@ int main(){
             sys.displayVehiclesSummary();
             cout << "Enter vehicle number: ";
             int vChoice; cin >> vChoice;
-            while (cin.fail() || vChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || vChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -644,7 +710,7 @@ int main(){
             sys.displayStationsSummary();
             cout << "Enter station number: ";
             int sChoice; cin >> sChoice;
-            while (cin.fail() || sChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || sChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -658,6 +724,7 @@ int main(){
             }
 
             cout << "Schedules at this station:" << endl;
+    // List all schedules of the station.
             chosenStation->listSchedules();
 
             if(chosenStation->getScheduleSize() == 0){
@@ -667,7 +734,7 @@ int main(){
 
             cout << "Enter schedule number to remove: ";
             int sPos; cin >> sPos;
-            while (cin.fail() || sPos < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || sPos < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -679,6 +746,7 @@ int main(){
                 cout << "Invalid schedule choice...!" << endl;
                 continue;
             }
+    // Remove a schedule from the station by index.
             chosenStation->removeSchedule(sPos - 1);
             cout << "Schedule removed successfully...!" << endl;
         }
@@ -694,7 +762,7 @@ int main(){
             sys.displayStations();
             cout << "Enter station number: ";
             int sChoice; cin >> sChoice;
-            while (cin.fail()|| sChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail()|| sChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -708,6 +776,7 @@ int main(){
             }
 
             cout << "Schedules at " << chosenStation->getName() << ":" << endl;
+    // List all schedules of the station.
             chosenStation->listSchedules();
             if(chosenStation->getScheduleSize() == 0){
                 cout << "No schedules available...!" << endl;
@@ -725,7 +794,7 @@ int main(){
             cout << "\t#4. Metro" << endl;
             cout << "Choose your option: ";
             int tChoice; cin >> tChoice;
-            while (cin.fail() || tChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || tChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -742,7 +811,7 @@ int main(){
             }
             cout << "Enter vehicle route: "; getline(cin, _route);
             cout << "Enter vehicle capacity: "; cin >> _capacity;
-            while (cin.fail() || _capacity < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || _capacity < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -750,7 +819,7 @@ int main(){
             }
             cin.ignore();
             cout << "Enter booked seats: "; cin >> _bookedSeats;
-            while (cin.fail() || _bookedSeats < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || _bookedSeats < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -758,7 +827,7 @@ int main(){
             }
             cin.ignore();
             cout << "Enter vehicle speed (km/h): "; cin >> _speed;
-            while (cin.fail() || _speed < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || _speed < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -767,7 +836,7 @@ int main(){
             cin.ignore();
             cout << "Enter vehicle status (On-time/Delayed): "; getline(cin, _status);
             cout << "Enter travel distance (km): "; double _distance; cin >> _distance;
-            while (cin.fail() || _distance < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || _distance < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -799,7 +868,7 @@ int main(){
             sys.displayStationsSummary();
             cout << "Enter station number: ";
             int sChoice; cin >> sChoice;
-            while (cin.fail() || sChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || sChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -816,7 +885,7 @@ int main(){
             sys.displayVehiclesSummary();
             cout << "Enter vehicle number: ";
             int vChoice; cin >> vChoice;
-            while (cin.fail() || vChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || vChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -844,7 +913,7 @@ int main(){
             int _age;
             cout << "Enter passenger name: "; getline(cin, _name);
             cout << "Enter passenger age: "; cin >> _age;
-            while (cin.fail() || _age < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || _age < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -873,7 +942,7 @@ int main(){
             sys.displayPassengersSummary();
             cout << "Enter passenger number: ";
             int pChoice; cin >> pChoice;
-            while (cin.fail() || pChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || pChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -890,7 +959,7 @@ int main(){
             sys.displayVehiclesSummary();
             cout << "Enter vehicle number: ";
             int vChoice; cin >> vChoice;
-            while (cin.fail() || vChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || vChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -921,7 +990,7 @@ int main(){
             sys.displayPassengersSummary();
             cout << "Enter passenger number: ";
             int pChoice; cin >> pChoice;
-            while (cin.fail() || pChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || pChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
@@ -938,7 +1007,7 @@ int main(){
             sys.displayVehiclesSummary();
             cout << "Enter vehicle number: ";
             int vChoice; cin >> vChoice;
-            while (cin.fail() || vChoice < 0){ // kiểm tra nhập đúng số nguyên dương
+            while (cin.fail() || vChoice < 0){ // check valid positive integer input
                 cout << "Invalid input...!!! Please enter a non-negative number: ";
                 cin.clear();
                 cin.ignore(10000,'\n');
